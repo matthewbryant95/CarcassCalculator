@@ -533,6 +533,47 @@
     return panels;
   }
 
+  // Load saved carcasses from localStorage
+function loadCarcasses() {
+  const data = localStorage.getItem('savedCarcasses');
+  if (data) {
+    try {
+      const arr = JSON.parse(data);
+      if (Array.isArray(arr)) {
+        savedCarcasses.length = 0;
+        arr.forEach(c => savedCarcasses.push(c));
+      }
+    } catch (e) {
+      // Ignore parse errors
+    }
+  }
+}
+
+// Save carcasses to localStorage
+function saveCarcassesToStorage() {
+  localStorage.setItem('savedCarcasses', JSON.stringify(savedCarcasses));
+}
+
+// Update render and storage after changes
+function renderSavedCarcasses() {
+  const table = document.getElementById('savedCarcassesTable');
+  table.innerHTML = savedCarcasses.map((c, i) => `
+    <tr>
+      <td>${c.name}</td>
+      <td>${c.dimensions}</td>
+      <td>${c.thickness}</td>
+      <td>${c.type}</td>
+      <td>${c.parts.map(p => `<span class="block">${p.type}: <span class="font-mono">${Math.round(p.width)}x${Math.round(p.height)}</span> <span class="text-gray-500">(x${p.qty})</span></span>`).join('')}</td>
+      <td>
+        <button onclick="removeCarcass(${i})" class="icon-btn" title="Remove"><i class="fa-solid fa-trash"></i></button>
+      </td>
+    </tr>
+  `).join('');
+  saveCarcassesToStorage();
+  renderPanelList();
+  renderDoorList();
+}
+
   function saveCarcass() {
     let name = document.getElementById('carcassName').value.trim();
     if (!name) {
@@ -579,62 +620,19 @@
     });
 
     renderSavedCarcasses();
-    renderPanelList();
-    renderDoorList();
   }
 
   function removeCarcass(index) {
     savedCarcasses.splice(index, 1);
     renderSavedCarcasses();
-    renderPanelList();
-    renderDoorList();
   }
 
-  function renderSavedCarcasses() {
-    const table = document.getElementById('savedCarcassesTable');
-    table.innerHTML = savedCarcasses.map((c, i) => `
-      <tr>
-        <td>${c.name}</td>
-        <td>${c.dimensions}</td>
-        <td>${c.thickness}</td>
-        <td>${c.type}</td>
-        <td>${c.parts.map(p => `<span class="block">${p.type}: <span class="font-mono">${Math.round(p.width)}x${Math.round(p.height)}</span> <span class="text-gray-500">(x${p.qty})</span></span>`).join('')}</td>
-        <td>
-          <button onclick="removeCarcass(${i})" class="icon-btn" title="Remove"><i class="fa-solid fa-trash"></i></button>
-        </td>
-      </tr>
-    `).join('');
-  }
-
-  function renderPanelList() {
-    const allPanels = {};
-    savedCarcasses.flatMap(c => c.parts.filter(p => !p.type.includes('Door') && !p.type.includes('Drawer'))).forEach(p => {
-      const key = `${p.type}|${p.width}|${p.height}`;
-      allPanels[key] = (allPanels[key] || 0) + p.qty;
-    });
-
-    const list = Object.entries(allPanels).map(([k, qty]) => {
-      const [type, width, height] = k.split('|');
-      return `<tr><td>${type}</td><td>${Math.round(width)}</td><td>${Math.round(height)}</td><td>${qty}</td></tr>`;
-    }).join('');
-
-    document.getElementById('panelList').innerHTML = list;
-  }
-
-  function renderDoorList() {
-    const allDoors = {};
-    savedCarcasses.flatMap(c => c.parts.filter(p => p.type.includes('Door') || p.type.includes('Drawer'))).forEach(p => {
-      const key = `${p.width}|${p.height}`;
-      allDoors[key] = (allDoors[key] || 0) + p.qty;
-    });
-
-    const list = Object.entries(allDoors).map(([k, qty]) => {
-      const [width, height] = k.split('|');
-      return `<tr><td>${Math.round(width)}</td><td>${Math.round(height)}</td><td>${qty}</td></tr>`;
-    }).join('');
-
-    document.getElementById('doorList').innerHTML = list;
-  }
+  // On page load, restore saved carcasses
+  document.addEventListener('DOMContentLoaded', function () {
+    // ...existing code...
+    loadCarcasses();
+    renderSavedCarcasses();
+  });
 
   // Export to CSV
   function exportCSV() {
