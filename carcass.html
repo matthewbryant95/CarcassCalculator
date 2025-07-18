@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carcass Calculator</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    body {
+      background: #f7fafc;
+      min-height: 100vh;
+      font-family: 'Roboto', 'Inter', 'Segoe UI', Arial, sans-serif;
+      color: #222e3a;
+    }
+    .glass {
+      background: #fff;
+      box-shadow: 0 2px 8px 0 rgba(30, 41, 59, 0.06);
+      border-radius: 1rem;
+      border: 1px solid #e5e7eb;
+      transition: box-shadow 0.3s;
+      padding: 1.5rem 1rem;
+    }
+    .glass-hero {
+      background: #f3f6fa;
+      border-radius: 1.2rem;
+      box-shadow: 0 2px 8px 0 rgba(30, 41, 59, 0.07);
+      padding: 1.3rem 1rem 0.8rem 1rem;
+      margin-bottom: 1.2rem;
+      text-align: center;
+    }
+    .hero-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #2563eb;
+      letter-spacing: 0.01em;
+      margin-bottom: 0.2rem;
+    }
+    .section-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+      letter-spacing: 0.01em;
+      color: #2563eb;
+    }
+    .input-label {
+      font-weight: 500;
+      color: #334155;
+      margin-bottom: 0.25rem;
+      letter-spacing: 0.01em;
+      font-size: 0.97rem;
+    }
+    input, select {
+      background: #f8fafc;
+      border: 1.5px solid #d1d5db;
+      border-radius: 0.5rem;
+      padding: 0.35rem 0.7rem;
+      font-size: 0.97rem;
+      transition: border 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+    input:focus, select:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 2px #dbeafe;
+    }
+    /* Add disabled style for input/select */
+    input:disabled, select:disabled {
+      background: #e5e7eb !important;
+      color: #9ca3af !important;
+      cursor: not-allowed;
+      opacity: 1;
+    }
+    .btn {
+      transition: all 0.2s;
+      box-shadow: 0 1px 4px 0 rgba(30, 41, 59, 0.07);
+      border-radius: 0.5rem;
+      font-size: 0.97rem;
+      padding: 0.45rem 1.2rem;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      border: none;
+      outline: none;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn.bg-blue-600 {
+      background: #2563eb;
+      color: #fff;
+    }
+    .btn.bg-blue-600:hover {
+      background: #1d4ed8;
+    }
+    .btn.bg-pink-500 {
+      background: #64748b;
+      color: #fff;
+    }
+    .btn.bg-pink-500:hover {
+      background: #475569;
+    }
+    .btn.bg-green-500 {
+      background: #38bdf8;
+      color: #fff;
+    }
+    .btn.bg-green-500:hover {
+      background: #0ea5e9;
+    }
+    .table-auto th, .table-auto td {
+      padding: 0.38rem 0.25rem;
+      font-size: 0.93rem;
+      text-align: left;
+    }
+    .table-auto th {
+      background: #f3f6fa;
+      color: #2563eb;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      border-bottom: 1.5px solid #e5e7eb;
+    }
+    .table-auto tr:nth-child(even) { background: #f8fafc; }
+    .table-auto tr:hover { background: #e5e7eb; }
+    .icon-btn {
+      background: none;
+      border: none;
+      color: #2563eb;
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 0.08rem 0.25rem;
+      transition: color 0.2s, background 0.2s;
+      border-radius: 0.3rem;
+    }
+    .icon-btn:hover { color: #64748b; background: #f1f5f9; }
+    .fade-in { animation: fadeIn 0.5s; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px);} to { opacity: 1; transform: none;} }
+    /* Custom scrollbar for tables */
+    ::-webkit-scrollbar { width: 8px; background: #e5e7eb; border-radius: 8px;}
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px;}
+    @media (max-width: 700px) {
+      .glass, .glass-hero { border-radius: 0.5rem; }
+      .hero-title { font-size: 1rem; }
+      .section-title { font-size: 0.92rem; }
+      .glass, .glass-hero { padding: 0.7rem 0.5rem; }
+    }
+    /* Reduce grid gaps */
+    .grid, .gap-6 { gap: 1rem !important; }
+    .mb-6 { margin-bottom: 0.7rem !important; }
+    .mb-10 { margin-bottom: 1.2rem !important; }
+    .mt-8 { margin-top: 0.7rem !important; }
+    .mt-4 { margin-top: 0.5rem !important; }
+    .p-8 { padding: 1.2rem !important; }
+    .gap-10 { gap: 1.2rem !important; }
+    /* Reduce max width */
+    .max-w-7xl { max-width: 900px !important; }
+  </style>
+</head>
+<body class="p-2 text-slate-800">
+    <div class="max-w-7xl mx-auto">
+      <div class="glass-hero fade-in">
+        <div class="hero-title">Carcass Calculator</div>
+        <div class="flex flex-wrap justify-center gap-2 mt-2">
+          <button onclick="exportPDF()" class="btn bg-pink-500 text-white shadow"><i class="fa-solid fa-file-pdf"></i>Export PDF</button>
+          <button onclick="exportCSV()" class="btn bg-green-500 text-white shadow"><i class="fa-solid fa-file-csv"></i>Export CSV</button>
+        </div>
+      </div>
+      <div class="glass p-8 mb-10 fade-in">
+        <div class="mb-6">
+          <label class="input-label">Carcass Name</label>
+          <input type="text" id="carcassName" class="w-full" placeholder="Enter name" value="" />
+        </div>
+        <div class="grid md:grid-cols-4 gap-6 mb-6">
+          <div>
+            <label class="input-label">Height</label>
+            <input id="height" type="number" class="w-full" value="720" />
+          </div>
+          <div>
+            <label class="input-label">Width</label>
+            <input id="width" type="number" class="w-full" value="600" />
+          </div>
+          <div>
+            <label class="input-label">Depth</label>
+            <input id="depth" type="number" class="w-full" value="560" />
+          </div>
+          <div>
+            <label class="input-label">Units</label>
+            <select id="units" class="w-full">
+              <option value="mm" selected>mm</option>
+              <option value="cm">cm</option>
+              <option value="in">in</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid md:grid-cols-4 gap-6 mb-6">
+          <div>
+            <label class="input-label">Material Thickness</label>
+            <input id="thickness" type="number" class="w-full" value="18" />
+          </div>
+          <div>
+            <label class="input-label">Thickness Units</label>
+            <select id="thicknessUnit" class="w-full">
+              <option value="mm" selected>mm</option>
+              <option value="cm">cm</option>
+              <option value="in">in</option>
+            </select>
+          </div>
+          <div>
+            <label class="input-label">Back Thickness</label>
+            <input id="backThickness" type="number" class="w-full" value="18" disabled />
+          </div>
+          <div>
+            <label class="input-label">Back Thickness Units</label>
+            <select id="backThicknessUnit" class="w-full" disabled>
+              <option value="mm" selected>mm</option>
+              <option value="cm">cm</option>
+              <option value="in">in</option>
+            </select>
+            <div class="flex items-center mt-2">
+              <input type="checkbox" id="differentBackThickness" class="mr-2" />
+              <label for="differentBackThickness" class="text-sky-900">Use different back thickness</label>
+            </div>
+          </div>
+        </div>
+        <div class="mb-6">
+          <input type="checkbox" id="reversePanels" class="mr-2" />
+          <label for="reversePanels" class="input-label">Sides run full height (top/bottom inside sides)</label>
+        </div>
+        <div class="grid md:grid-cols-2 gap-6 mb-6">
+          <div>
+            <label class="input-label">Number of Doors/Drawers</label>
+            <input id="doorCount" type="number" value="1" class="w-full" />
+          </div>
+          <div>
+            <label class="input-label">Type</label>
+            <select id="doorType" class="w-full">
+              <option value="doors" selected>Doors</option>
+              <option value="drawers">Drawers</option>
+            </select>
+          </div>
+        </div>
+        <div class="flex flex-col md:flex-row md:items-start gap-4 mt-8">
+          <div id="previewSection" class="flex-1"></div>
+          <div id="netPreview" class="flex-shrink-0"></div>
+          <!-- 3D render removed -->
+        </div>
+        <div class="mt-8 flex flex-wrap gap-2 justify-end">
+          <button onclick="saveCarcass()" class="btn bg-blue-600 text-white shadow"><i class="fa-solid fa-save"></i>Save</button>
+        </div>
+      </div>
+      <div class="glass p-8 mb-10 fade-in">
+        <h2 class="section-title">Saved Carcasses</h2>
+        <table class="table-auto w-full text-sm rounded-lg overflow-hidden shadow mt-4">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Dimensions</th>
+              <th>Material Thickness</th>
+              <th>Type</th>
+              <th>Parts</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="savedCarcassesTable"></tbody>
+        </table>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+        <div class="glass p-8 fade-in">
+          <h2 class="section-title">All Panels</h2>
+          <table class="table-auto w-full text-sm rounded-lg overflow-hidden shadow mt-4">
+            <thead>
+              <tr><th>Type</th><th>Width</th><th>Height</th><th>Qty</th></tr>
+            </thead>
+            <tbody id="panelList"></tbody>
+          </table>
+        </div>
+        <div class="glass p-8 fade-in">
+          <h2 class="section-title">All Doors/Drawers</h2>
+          <table class="table-auto w-full text-sm rounded-lg overflow-hidden shadow mt-4">
+            <thead>
+              <tr><th>Width</th><th>Height</th><th>Qty</th></tr>
+            </thead>
+            <tbody id="doorList"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+<!-- Remove three.js CDN for 3D rendering -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+  // Ensure checkbox is unchecked and inputs are disabled on load
+  document.addEventListener('DOMContentLoaded', function () {
+    const backThicknessInput = document.getElementById('backThickness');
+    const backThicknessUnit = document.getElementById('backThicknessUnit');
+    const differentBackThickness = document.getElementById('differentBackThickness');
+    differentBackThickness.checked = false;
+    backThicknessInput.disabled = true;
+    backThicknessUnit.disabled = true;
+    backThicknessInput.value = '';
+  });
+
+  document.getElementById('differentBackThickness').addEventListener('change', function () {
+    const backThicknessInput = document.getElementById('backThickness');
+    const backThicknessUnit = document.getElementById('backThicknessUnit');
+    if (this.checked) {
+      backThicknessInput.disabled = false;
+      backThicknessUnit.disabled = false;
+      // Set default value to match material thickness
+      backThicknessInput.value = document.getElementById('thickness').value;
+      backThicknessUnit.value = document.getElementById('thicknessUnit').value;
+    } else {
+      backThicknessInput.disabled = true;
+      backThicknessUnit.disabled = true;
+      backThicknessInput.value = '';
+    }
+    previewPanels();
+  });
+
+  // Keep back thickness value in sync with thickness if not using different back thickness
+  document.getElementById('thickness').addEventListener('input', function () {
+    if (!document.getElementById('differentBackThickness').checked) {
+      document.getElementById('backThickness').value = '';
+    }
+    previewPanels();
+  });
+
+  const savedCarcasses = [];
+  let carcassCounter = 1;
+
+  function convertUnits(value, fromUnit, toUnit) {
+    const conversions = { mm: 1, cm: 10, in: 25.4 };
+    return value * conversions[fromUnit] / conversions[toUnit];
+  }
+
+  function calculatePanels({ height, width, depth, thickness, backThickness, doorCount, doorType, reversePanels }) {
+    // Panels form a true box, all panels are cut to fit and the back fits inside the box.
+    // reversePanels: if true, sides run full height (top/bottom inside sides)
+    // if false, top/bottom run full width (sides inside top/bottom)
+    let sideHeight, sideDepth, topBottomWidth, topBottomDepth, backWidth, backHeight;
+
+    sideDepth = topBottomDepth = depth;
+
+    if (reversePanels) {
+      // Sides run full height, top/bottom fit between sides
+      sideHeight = height;
+      topBottomWidth = width - 2 * thickness;
+    } else {
+      // Top/bottom run full width, sides fit between top/bottom
+      sideHeight = height - 2 * thickness;
+      topBottomWidth = width;
+    }
+
+    // Back panel always fits inside the box formed by the sides and top/bottom
+    backWidth = width - 2 * thickness;
+    backHeight = height - 2 * thickness;
+
+    const panelList = [
+      { type: 'Side Panel', width: sideDepth, height: sideHeight, qty: 2 },
+      { type: 'Top/Bottom Panel', width: topBottomWidth, height: topBottomDepth, qty: 2 },
+      { type: 'Back Panel', width: backWidth, height: backHeight, qty: 1 },
+    ];
+
+    // Door/drawer calculations: 2mm gap all around, 3mm between doors/drawers
+    if (doorType === 'doors') {
+      const gap = 2;
+      const between = 3;
+      const doorWidth = (width - 2 * gap - (doorCount - 1) * between) / doorCount;
+      const doorHeight = height - 2 * gap;
+      for (let i = 0; i < doorCount; i++) {
+        panelList.push({ type: 'Door', width: doorWidth, height: doorHeight, qty: 1 });
+      }
+    } else {
+      const gap = 2;
+      const between = 3;
+      const drawerHeight = (height - 2 * gap - (doorCount - 1) * between) / doorCount;
+      const drawerWidth = width - 2 * gap;
+      for (let i = 0; i < doorCount; i++) {
+        panelList.push({ type: 'Drawer Front', width: drawerWidth, height: drawerHeight, qty: 1 });
+      }
+    }
+    return panelList;
+  }
+
+  function renderNetPreview(panels) {
+    // Only draw if all panels are present
+    if (!panels || panels.length < 3) {
+      document.getElementById('netPreview').innerHTML = '';
+      return;
+    }
+    const side = panels.find(p => p.type === 'Side Panel');
+    const top = panels.find(p => p.type === 'Top/Bottom Panel');
+    const back = panels.find(p => p.type === 'Back Panel');
+    if (!side || !top || !back) {
+      document.getElementById('netPreview').innerHTML = '';
+      return;
+    }
+
+    // Use actual thickness for offsets
+    const thickness = top.height;
+
+    // Panel sizes
+    const W = back.width;
+    const H = back.height;
+    const D = side.width;
+    const SH = side.height;
+    const TW = top.width;
+    const TH = top.height;
+
+    // SVG size and scale
+    const svgW = 340, svgH = 340;
+    // Net bounding box: width = max(TW, W) + 2*D, height = max(SH, H) + 2*TH
+    const netW = Math.max(TW, W) + 2 * D;
+    const netH = Math.max(SH, H) + 2 * TH;
+    const scale = Math.min((svgW - 24) / netW, (svgH - 24) / netH);
+
+    // Center net in SVG
+    const offsetX = (svgW - netW * scale) / 2;
+    const offsetY = (svgH - netH * scale) / 2;
+
+    // Calculate vertical centering for side panels if taller than back
+    const sideYOffset = offsetY + TH * scale + (Math.max(0, SH - H) / 2) * scale;
+    const backYOffset = offsetY + TH * scale + (Math.max(0, SH - H) / 2) * scale + (SH > H ? (SH - H) / 2 * scale : 0);
+
+    // Calculate horizontal centering for top/bottom panels if wider than back
+    const topXOffset = offsetX + D * scale + (W * scale - TW * scale) / 2;
+    const topWidth = TW * scale;
+    const topHeight = TH * scale;
+
+    // Back panel (center)
+    const backX = offsetX + D * scale;
+    const backY = backYOffset;
+
+    // Top panel (touching back, centered horizontally if wider)
+    const topX = topXOffset;
+    const topY = backY - topHeight;
+
+    // Bottom panel (touching back, centered horizontally if wider)
+    const bottomX = topXOffset;
+    const bottomY = backY + H * scale;
+
+    // Left side (left of back, vertically centered if taller)
+    const leftX = offsetX;
+    const leftY = sideYOffset;
+
+    // Right side (right of back, vertically centered if taller)
+    const rightX = offsetX + (D + W) * scale;
+    const rightY = sideYOffset;
+
+    // Helper to draw a rectangle with label and dims
+    function rect(x, y, w, h, label) {
+      // Adjust text size for small panels
+      const fontSize = Math.max(10, Math.min(13, Math.min(w, h) / 6));
+      const dimFontSize = fontSize - 2;
+      return `
+        <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#e5eaf3" stroke="#2563eb" stroke-width="1.2"/>
+        <text x="${x + w/2}" y="${y + h/2 - 6}" text-anchor="middle" font-size="${fontSize}" fill="#222e3a" font-family="sans-serif" font-weight="bold">${label}</text>
+        <text x="${x + w/2}" y="${y + h/2 + 12}" text-anchor="middle" font-size="${dimFontSize}" fill="#64748b" font-family="monospace">${Math.round(w/scale)} x ${Math.round(h/scale)} mm</text>
+      `;
+    }
+
+    let svg = `<svg width="${svgW}" height="${svgH}" viewBox="0 0 ${svgW} ${svgH}" style="background:#f8fafc;">`;
+    // Top
+    svg += rect(topX, topY, topWidth, topHeight, "Top");
+    // Back
+    svg += rect(backX, backY, W * scale, H * scale, "Back");
+    // Bottom
+    svg += rect(bottomX, bottomY, topWidth, topHeight, "Bottom");
+    // Left Side
+    svg += rect(leftX, leftY, D * scale, SH * scale, "Side");
+    // Right Side
+    svg += rect(rightX, rightY, D * scale, SH * scale, "Side");
+    svg += `</svg>`;
+
+    document.getElementById('netPreview').innerHTML = svg;
+  }
+
+  function previewPanels() {
+    // Validate inputs
+    const height = parseFloat(document.getElementById('height').value);
+    const width = parseFloat(document.getElementById('width').value);
+    const depth = parseFloat(document.getElementById('depth').value);
+    const thickness = parseFloat(document.getElementById('thickness').value);
+    const units = document.getElementById('units').value;
+    const thicknessUnit = document.getElementById('thicknessUnit').value;
+    const backThicknessInput = document.getElementById('backThickness');
+    const backThicknessUnit = document.getElementById('backThicknessUnit').value;
+    const useDifferentBack = document.getElementById('differentBackThickness').checked;
+    const doorCount = parseInt(document.getElementById('doorCount').value);
+    const doorType = document.getElementById('doorType').value;
+    const reversePanels = document.getElementById('reversePanels').checked;
+
+    if (
+      isNaN(height) || isNaN(width) || isNaN(depth) ||
+      isNaN(thickness) || doorCount < 1
+    ) {
+      document.getElementById('previewSection').innerHTML = '<div class="text-red-600">Please fill in all required fields.</div>';
+      return [];
+    }
+
+    let backThickness = thickness;
+    let backThicknessUnitValue = thicknessUnit;
+    if (useDifferentBack) {
+      backThickness = parseFloat(backThicknessInput.value);
+      backThicknessUnitValue = backThicknessUnit;
+      if (isNaN(backThickness)) {
+        document.getElementById('previewSection').innerHTML = '<div class="text-red-600">Please enter back thickness.</div>';
+        return [];
+      }
+    }
+
+    // Convert all to mm
+    const heightMM = convertUnits(height, units, 'mm');
+    const widthMM = convertUnits(width, units, 'mm');
+    const depthMM = convertUnits(depth, units, 'mm');
+    const thicknessMM = convertUnits(thickness, thicknessUnit, 'mm');
+    const backThicknessMM = convertUnits(backThickness, backThicknessUnit, 'mm');
+
+    const panels = calculatePanels({
+      height: heightMM,
+      width: widthMM,
+      depth: depthMM,
+      thickness: thicknessMM,
+      backThickness: backThicknessMM,
+      doorCount,
+      doorType,
+      reversePanels
+    });
+
+    const preview = panels.map(p =>
+      `<div>${p.type}: <span class="font-mono text-blue-700">${Math.round(p.width)}mm x ${Math.round(p.height)}mm</span> <span class="text-gray-500">(x${p.qty})</span></div>`
+    ).join('');
+    document.getElementById('previewSection').innerHTML = `<h3 class="font-semibold mb-2 text-blue-800">Preview</h3>${preview}`;
+    renderNetPreview(panels);
+    return panels;
+  }
+
+  function saveCarcass() {
+    let name = document.getElementById('carcassName').value.trim();
+    if (!name) {
+      name = `Carcass ${carcassCounter++}`;
+      document.getElementById('carcassName').value = '';
+    }
+    const height = parseFloat(document.getElementById('height').value);
+    const width = parseFloat(document.getElementById('width').value);
+    const depth = parseFloat(document.getElementById('depth').value);
+    const units = document.getElementById('units').value;
+    const thickness = parseFloat(document.getElementById('thickness').value);
+    const thicknessUnit = document.getElementById('thicknessUnit').value;
+    const backThicknessInput = document.getElementById('backThickness');
+    const backThickness = document.getElementById('differentBackThickness').checked ? parseFloat(backThicknessInput.value) : thickness;
+    const backThicknessUnit = document.getElementById('differentBackThickness').checked ? document.getElementById('backThicknessUnit').value : thicknessUnit;
+    const doorCount = parseInt(document.getElementById('doorCount').value);
+    const doorType = document.getElementById('doorType').value;
+    const reversePanels = document.getElementById('reversePanels').checked;
+
+    const heightMM = convertUnits(height, units, 'mm');
+    const widthMM = convertUnits(width, units, 'mm');
+    const depthMM = convertUnits(depth, units, 'mm');
+    const thicknessMM = convertUnits(thickness, thicknessUnit, 'mm');
+    const backThicknessMM = convertUnits(backThickness, backThicknessUnit, 'mm');
+
+    const panels = calculatePanels({
+      height: heightMM,
+      width: widthMM,
+      depth: depthMM,
+      thickness: thicknessMM,
+      backThickness: backThicknessMM,
+      doorCount,
+      doorType,
+      reversePanels
+    });
+
+    savedCarcasses.push({
+      name,
+      dimensions: `${width}${units} x ${height}${units} x ${depth}${units}`,
+      thickness: `${thickness}${thicknessUnit}`,
+      type: `${doorCount} ${doorType}`,
+      parts: panels,
+      reversePanels
+    });
+
+    renderSavedCarcasses();
+    renderPanelList();
+    renderDoorList();
+  }
+
+  function removeCarcass(index) {
+    savedCarcasses.splice(index, 1);
+    renderSavedCarcasses();
+    renderPanelList();
+    renderDoorList();
+  }
+
+  function renderSavedCarcasses() {
+    const table = document.getElementById('savedCarcassesTable');
+    table.innerHTML = savedCarcasses.map((c, i) => `
+      <tr>
+        <td>${c.name}</td>
+        <td>${c.dimensions}</td>
+        <td>${c.thickness}</td>
+        <td>${c.type}</td>
+        <td>${c.parts.map(p => `<span class="block">${p.type}: <span class="font-mono">${Math.round(p.width)}x${Math.round(p.height)}</span> <span class="text-gray-500">(x${p.qty})</span></span>`).join('')}</td>
+        <td>
+          <button onclick="removeCarcass(${i})" class="icon-btn" title="Remove"><i class="fa-solid fa-trash"></i></button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  function renderPanelList() {
+    const allPanels = {};
+    savedCarcasses.flatMap(c => c.parts.filter(p => !p.type.includes('Door') && !p.type.includes('Drawer'))).forEach(p => {
+      const key = `${p.type}|${p.width}|${p.height}`;
+      allPanels[key] = (allPanels[key] || 0) + p.qty;
+    });
+
+    const list = Object.entries(allPanels).map(([k, qty]) => {
+      const [type, width, height] = k.split('|');
+      return `<tr><td>${type}</td><td>${Math.round(width)}</td><td>${Math.round(height)}</td><td>${qty}</td></tr>`;
+    }).join('');
+
+    document.getElementById('panelList').innerHTML = list;
+  }
+
+  function renderDoorList() {
+    const allDoors = {};
+    savedCarcasses.flatMap(c => c.parts.filter(p => p.type.includes('Door') || p.type.includes('Drawer'))).forEach(p => {
+      const key = `${p.width}|${p.height}`;
+      allDoors[key] = (allDoors[key] || 0) + p.qty;
+    });
+
+    const list = Object.entries(allDoors).map(([k, qty]) => {
+      const [width, height] = k.split('|');
+      return `<tr><td>${Math.round(width)}</td><td>${Math.round(height)}</td><td>${qty}</td></tr>`;
+    }).join('');
+
+    document.getElementById('doorList').innerHTML = list;
+  }
+
+  // Export to CSV
+  function exportCSV() {
+    if (savedCarcasses.length === 0) {
+      alert("No carcasses to export.");
+      return;
+    }
+    let csv = "Name,Dimensions,Material Thickness,Type,Part Type,Width,Height,Qty\n";
+    savedCarcasses.forEach(c => {
+      c.parts.forEach(p => {
+        csv += `"${c.name}","${c.dimensions}","${c.thickness}","${c.type}","${p.type}",${Math.round(p.width)},${Math.round(p.height)},${p.qty}\n`;
+      });
+    });
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "carcasses.csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  // Export to PDF
+  function exportPDF() {
+    if (savedCarcasses.length === 0) {
+      alert("No carcasses to export.");
+      return;
+    }
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    let y = 10;
+    doc.setFontSize(16);
+    doc.text("Carcass Builder Export", 10, y);
+    y += 8;
+    doc.setFontSize(10);
+
+    savedCarcasses.forEach((c, idx) => {
+      if (y > 270) { doc.addPage(); y = 10; }
+      doc.setFont(undefined, "bold");
+      doc.text(`${idx + 1}. ${c.name} (${c.dimensions}, ${c.thickness}, ${c.type})`, 10, y);
+      y += 6;
+      doc.setFont(undefined, "normal");
+      c.parts.forEach(p => {
+        if (y > 280) { doc.addPage(); y = 10; }
+        doc.text(`- ${p.type}: ${Math.round(p.width)} x ${Math.round(p.height)} (x${p.qty})`, 14, y);
+        y += 5;
+      });
+      y += 3;
+    });
+
+    doc.save("carcasses.pdf");
+  }
+
+  // Live preview
+  document.querySelectorAll('input, select').forEach(el => {
+    el.addEventListener('input', previewPanels);
+  });
+
+  previewPanels(); // initial load
+</script>
+</body>
+</html>
